@@ -1,6 +1,5 @@
 name: Selenium Python CI
 
-
 on: [push]
 
 jobs:
