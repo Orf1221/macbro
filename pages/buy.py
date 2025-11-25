@@ -6,21 +6,22 @@ from selenium.webdriver.common.action_chains import ActionChains
 class Buy:
     def __init__(self, driver):
         self.driver = driver
-        self.gosearch = (By.CSS_SELECTOR, "a.thb-quick-search")
-        self.put = (By.CSS_SELECTOR, "#side-panel-search-input")
-        self.panel = (By.CSS_SELECTOR, "#side-panel-search")  # сама боковая панель
+        self.gosearch= (By.CSS_SELECTOR, "#header > div > div.thb-secondary-area.thb-header-right > a.thb-secondary-area-item.thb-quick-search")
+        self.put = (By.CSS_SELECTOR, "#Search-Drawer > div > div.side-panel-header > div > form > fieldset")
+        self.panel = (By.CSS_SELECTOR, "#side-panel-search")
 
     def click_gosearch(self):
         wait = WebDriverWait(self.driver, 10)
         wait.until(EC.element_to_be_clickable(self.gosearch)).click()
-        # дождаться, пока панель откроется
+
         wait.until(EC.visibility_of_element_located(self.panel))
 
-    def input_iphone(self, text):
+    def input_put(self, put):
         wait = WebDriverWait(self.driver, 10)
-        input_box = wait.until(EC.element_to_be_clickable(self.put))
-        # прокрутка и клик
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", input_box)
-        ActionChains(self.driver).move_to_element(input_box).click().perform()
-        input_box.clear()
-        input_box.send_keys(text)
+        wait.until(EC.presence_of_element_located(self.put)).send_keys(put)
+
+
+
+
+
+
