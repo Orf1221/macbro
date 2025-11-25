@@ -14,22 +14,30 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          # install from requirements.txt if present; otherwise print a message
+          # install from requirements.txt if present
           if [ -f requirements.txt ]; then
             pip install -r requirements.txt
-          else
-            echo "No requirements.txt found — skipping pip install (add one or adjust this step)"
           fi
+          # ensure pytest is available for running tests
+          pip install --upgrade pytest
 
-      - name: run Tests
+      - name: Run tests (Xvfb)
         env:
           DISPLAY: ":99"
         run: |
           sudo apt-get update
           sudo apt-get install -y xvfb
-          # start X virtual framebuffer on display :99 (background)
-          Xvfb :99 -screen 0 1024x768x24 >/dev/null 2>&1 &
-          pytest tests/
+          # run tests under X virtual framebuffer
+          # xvfb-run handles starting/stopping Xvfb for the command
+          xvfb-run -a pytest tests/
