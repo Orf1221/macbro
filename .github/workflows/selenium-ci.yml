@@ -24,20 +24,18 @@ jobs:
             pip install -r requirements.txt
           fi
           pip install --upgrade pytest selenium
-      - name: Install Chrome
+      - name: Install Firefox
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget unzip fontconfig libfontconfig1 libjpeg-turbo8 libpng16-16 libx11-6 libxext6 libxrender1 xfonts-75dpi xfonts-base
-          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-          sudo dpkg -i google-chrome-stable_current_amd64.deb || sudo apt-get -f install -y
-      - name: Install Chromedriver
+          sudo apt-get install -y firefox
+      - name: Install Geckodriver
         run: |
-          CHROME_MAJOR_VERSION=$(google-chrome --version | cut -d ' ' -f 3 | cut -d '.' -f 1)
-          DRIVER_VERSION=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_${CHROME_MAJOR_VERSION}")
-          wget -N https://storage.googleapis.com/chrome-for-testing-public/${DRIVER_VERSION}/linux64/chromedriver-linux64.zip -P /tmp
-          unzip /tmp/chromedriver-linux64.zip -d /tmp
-          sudo mv /tmp/chromedriver-linux64/chromedriver /usr/local/bin/chromedriver
-          sudo chmod +x /usr/local/bin/chromedriver
+          GECKO_VERSION=$(curl -s "https://api.github.com/repos/mozilla/geckodriver/releases/latest" | grep "tag_name" | cut -d : -f 2 | tr -d \" | tr -d , | tr -d ' ')
+          GECKO_VERSION=${GECKO_VERSION#v}
+          wget -N https://github.com/mozilla/geckodriver/releases/download/v${GECKO_VERSION}/geckodriver-v${GECKO_VERSION}-linux64.tar.gz -P /tmp
+          tar -xvzf /tmp/geckodriver-v${GECKO_VERSION}-linux64.tar.gz -C /tmp
+          sudo mv /tmp/geckodriver /usr/local/bin/geckodriver
+          sudo chmod +x /usr/local/bin/geckodriver
       - name: Install Xvfb
         run: |
           sudo apt-get install -y xvfb
